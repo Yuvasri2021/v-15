@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>3D Skewed Cubes Animation</title>
+  <style>
+    :root {
+      --bg-gradient-dark: linear-gradient(135deg, #050707, #131314, #2a2a2b);
+      --bg-gradient-light: linear-gradient(135deg, #e2e5e8e1, #e0e0e0, #cfcfcf);
+      --cube-base: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      --cube-left: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+      --cube-top: linear-gradient(135deg, #d4fc79, #96e6a1);
+      --hover-bg: #ef4149;
+      --hover-shadow: 0 0 30px #ef4149;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      background: var(--bg-gradient-dark);
+      transition: background 0.5s ease, color 0.5s ease;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      width: 300%;
+      height: 300%;
+      background: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 30px 30px;
+      animation: moveBG 20s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes moveBG {
+      from { transform: translate(0, 0); }
+      to { transform: translate(-100px, -100px); }
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      padding: 10px 20px;
+      background: white;
+      color: black;
+      font-weight: bold;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      z-index: 10;
+      transition: 0.3s;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      text-align: center;
+      margin-top: 5%;
+    }
+
+    .theme-toggle:hover {
+      background: #ddd;
+    }
+
+    @keyframes animate {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+
+    .container {
+      position: relative;
+      top: -60px;
+      transform: skewY(-20deg);
+      animation: animate 5s linear infinite;
+      z-index: 1;
+    }
+
+    .cube {
+      position: relative;
+      z-index: 2;
+      animation: float 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(20px); }
+    }
+
+    .cube:nth-child(2) {
+      z-index: 1;
+      translate: -60px -60px;
+      animation-delay: 1s;
+    }
+
+    .cube:nth-child(3) {
+      z-index: 3;
+      translate: 60px 60px;
+      animation-delay: 2s;
+    }
+
+    .cube div {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      translate: calc(-70px * var(--x)) calc(-60px * var(--y));
+    }
+
+    .cube div span {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      background: var(--cube-base);
+      z-index: calc(1 * var(--i));
+      transition: 0.3s ease;
+      transform: scale(1);
+      border-radius: 6px;
+      box-shadow: 0 8px 20px rgba(255, 153, 160, 0.3);
+    }
+
+    .cube div span:hover {
+      transition: 0.2s ease;
+      background: var(--hover-bg);
+      filter: drop-shadow(var(--hover-shadow));
+      transform: scale(1.2);
+    }
+
+    .cube div span:hover::before,
+    .cube div span:hover::after {
+      transition: 0s;
+      background: var(--hover-bg);
+    }
+
+    .cube div span::before {
+      content: "";
+      position: absolute;
+      left: -40px;
+      width: 40px;
+      height: 100%;
+      background: var(--cube-left);
+      transform-origin: right;
+      transform: skewY(45deg);
+      transition: 0.5s;
+      border-radius: 5px;
+    }
+
+    .cube div span::after {
+      content: "";
+      position: absolute;
+      top: -40px;
+      left: 0px;
+      width: 100%;
+      height: 40px;
+      background: var(--cube-top);
+      transform-origin: bottom;
+      transform: skewX(45deg);
+      transition: 0.5s;
+      border-radius: 5px;
+    }
+
+    .glass {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.05);
+      z-index: 0;
+    }
+
+    body.light {
+      background: var(--bg-gradient-light);
+    }
+
+    body.light .theme-toggle {
+      background: #333;
+      color: white;
+    }
+
+    body.light .theme-toggle:hover {
+      background: #555;
+    }
+
+    body.light .glass {
+      background: rgba(0, 0, 0, 0.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="glass"></div>
+  <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+
+  <div class="container">
+    <div class="cube">
+      <div style="--x:-1; --y:0;">
+        <span style="--i:3;"></span><span style="--i:2;"></span><span style="--i:1;"></span>
+      </div>
+      <div style="--x:0; --y:0;">
+        <span style="--i:3;"></span><span style="--i:2;"></span><span style="--i:1;"></span>
+      </div>
+      <div style="--x:1; --y:0;">
+        <span style="--i:3;"></span><span style="--i:2;"></span><span style="--i:1;"></span>
+      </div>
+    </div>
+    <div class="cube">
+      <div style="--x:-1; --y:0;">
+        <span style="--i:3;"></span><span style="--i:2;"></span><span style="--i:1;"></span>
+      </div>
+      <div style="--x:0; --y:0;">
+        <span style="--i:3;"></span><span style="--i:2;"></span><span style="--i:1;"></span>
+      </div>
+      <div style="--x:1; --y:0;">
+        <span style="--i:3;"></span><span style="--i:2;"></span><span style="--i:1;"></span>
+      </div>
+    </div>
+    <div class="cube">
+      <div style="--x:-1; --y:0;">
+        <span style="--i:3;"></span><span style="--i:2;"></span><span style="--i:1;"></span>
+      </div>
+      <div style="--x:0; --y:0;">
+        <span style="--i:3;"></span><span style="--i:2;"></span><span style="--i:1;"></span>
+      </div>
+      <div style="--x:1; --y:0;">
+        <span style="--i:3;"></span><span style="--i:2;"></span><span style="--i:1;"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle("light");
+    }
+  </script>
+</body>
+</html>
